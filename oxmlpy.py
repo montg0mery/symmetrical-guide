@@ -8,14 +8,10 @@ import magic
 import shutil
 
 
-def check_file(file):
-    return zipfile.is_zipfile(file)
-
-
 def prepare(file):
     os.mkdir('base')
 
-    if check_file(file):
+    if zipfile.is_zipfile(file):
         with zipfile.ZipFile(file, 'r') as zipF:
             zipF.extractall(path='base')
     else:
