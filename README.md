@@ -1,8 +1,8 @@
 # OXMLpy
 Embed XXE payload into Open XML file formats
 
-Will generate a singular OXML file for each XML contained in the sample (input) OXML file.
-Made originally for xlsx files.
+Will generate a singular OXML document for each XML contained in the sample (input) OXML document.
+Made originally for xlsx document.
 
 ## Todo
 1 - Expand to generate a larger variety of payloads to choose
