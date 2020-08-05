@@ -14,5 +14,5 @@ Made originally for xlsx document.
 ## Example usage
 
 ```bash
-./oxmlpy.py -f data.xlsx -i 10.10.10.10
+./oxmlpy.py -f data.xlsx -i 10.10.10.10 -o out_dir
 ```
