@@ -6,6 +6,8 @@ import sys
 import argparse
 import magic
 import shutil
+import platform
+import time
 
 
 def prepare(file):
@@ -20,7 +22,11 @@ def prepare(file):
 
 
 def set_payload_positions():
-    positions = os.popen('find base -type f').read()
+    plat = platform.system()
+    if plat == 'Linux':
+        positions = os.popen('find base -type f').read()
+    elif plat == 'Windows':
+        positions = os.popen('powershell -c "Get-ChildItem -File -Recurse | %{$_.FullName} | Resolve-Path -Relative"').read()
     positions = positions.split('\n')
     return positions
 
@@ -61,9 +67,11 @@ def main():
     
     parser.add_argument('-f', '--file', type=str, metavar='', required=True, help='base file')
     parser.add_argument('-i', '--ip-address', type=str, metavar='', required=True, help='ip address to be placed in payloads (OOB XXE)')
-    parser.add_argument('-o', '--out', type='str', metavar='', required=True, help='directory to save output')
+    parser.add_argument('-o', '--out', type=str, metavar='', required=True, help='directory to save output')
 
     args = parser.parse_args()
+
+    extension = os.path.splitext(args.file)[-1]
 
     prepare(args.file)
     positions = set_payload_positions()
@@ -85,7 +93,8 @@ def main():
                 zipf = zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED)
                 compress(tmp_dir, zipf)
 
-                add_ext = output + '.xlsx'
+                add_ext = output + extension
+                time.sleep(1)
                 os.rename(output, add_ext)
 
                 shutil.move(add_ext, out_dir)
